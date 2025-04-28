@@ -23,7 +23,7 @@ const GodsPage = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:8000/gods', {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_HOST_URL}/gods`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -43,7 +43,7 @@ const GodsPage = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:8000/conversations', 
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
         { 
           god_id: godId,
           title: `Chat with ${gods.find(god => god.id === godId)?.name || 'God'}`
