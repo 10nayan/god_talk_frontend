@@ -174,8 +174,10 @@ const ConversationsPage = () => {
                 alt={currentConversation?.god?.name}
                 className="god-avatar"
               />
-              <h2>{currentConversation?.god?.name}</h2>
-              <p>Online</p>
+              <div className="name-status">
+                <h2>{currentConversation?.god?.name}</h2>
+                <p>Online</p>
+              </div>
             </div>
           </div>
         </div>

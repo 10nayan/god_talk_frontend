@@ -257,25 +257,6 @@ const GodsPage = () => {
           ))
         )}
       </motion.div>
-
-      <nav className="bottom-nav">
-        <button className="nav-item active">
-          <FaHome />
-          <span>Home</span>
-        </button>
-        <button className="nav-item">
-          <FaCompass />
-          <span>Guides</span>
-        </button>
-        <button className="nav-item">
-          <FaPray />
-          <span>Wisdom</span>
-        </button>
-        <button className="nav-item">
-          <FaUser />
-          <span>Profile</span>
-        </button>
-      </nav>
     </div>
   );
 };
