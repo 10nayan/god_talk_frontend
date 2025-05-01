@@ -15,6 +15,14 @@ const ConversationsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return;
+    }
+  }, [navigate]);
+
   const fetchConversations = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -44,6 +52,11 @@ const ConversationsPage = () => {
   const fetchConversationDetails = async (id) => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/');
+        return;
+      }
+
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations/${id}`,
         {
@@ -54,7 +67,11 @@ const ConversationsPage = () => {
       );
       setCurrentConversation(response.data);
     } catch (error) {
-      setError('Error fetching conversation details: ' + (error.response?.data?.detail || error.message));
+      if (error.response?.status === 401) {
+        navigate('/');
+      } else {
+        setError('Error fetching conversation details: ' + (error.response?.data?.detail || error.message));
+      }
     }
   };
 
@@ -157,19 +174,9 @@ const ConversationsPage = () => {
                 alt={currentConversation?.god?.name}
                 className="god-avatar"
               />
-              <div className="text-info">
-                <h2>{currentConversation?.god?.name}</h2>
-                <p>King of the Gods • Online</p>
-              </div>
+              <h2>{currentConversation?.god?.name}</h2>
+              <p>Online</p>
             </div>
-          </div>
-          <div className="right-section">
-            <button className="icon-button">
-              <FaPhone />
-            </button>
-            <button className="icon-button">
-              <FaEllipsisV />
-            </button>
           </div>
         </div>
       </div>

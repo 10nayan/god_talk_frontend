@@ -100,8 +100,13 @@ const GodsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return;
+    }
     fetchGods();
-  }, []);
+  }, [navigate]);
 
   const fetchGods = async () => {
     try {
@@ -118,8 +123,12 @@ const GodsPage = () => {
       });
       setGods(response.data);
     } catch (err) {
-      setError('Failed to fetch gods. Please try again later.');
-      console.error('Error fetching gods:', err);
+      if (err.response?.status === 401) {
+        navigate('/');
+      } else {
+        setError('Failed to fetch gods. Please try again later.');
+        console.error('Error fetching gods:', err);
+      }
     }
   };
 
@@ -145,8 +154,12 @@ const GodsPage = () => {
       );
       navigate(`/conversations/${response.data.id}`);
     } catch (err) {
-      setError('Failed to start chat. Please try again later.');
-      console.error('Error starting chat:', err);
+      if (err.response?.status === 401) {
+        navigate('/');
+      } else {
+        setError('Failed to start chat. Please try again later.');
+        console.error('Error starting chat:', err);
+      }
     }
   };
 
