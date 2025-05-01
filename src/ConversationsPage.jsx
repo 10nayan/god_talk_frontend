@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { FaArrowLeft, FaPaperPlane } from 'react-icons/fa';
+import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV } from 'react-icons/fa';
+import './ConversationsPage.css';
 
 const ConversationsPage = () => {
   const navigate = useNavigate();
@@ -93,115 +93,106 @@ const ConversationsPage = () => {
 
   if (!conversationId) {
     return (
-      <div className="container-fluid bg-light min-vh-100 py-5">
-        <div className="container">
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <h1 className="display-4 text-primary mb-0">My Conversations</h1>
-            <button 
-              className="btn btn-outline-primary btn-lg"
-              onClick={() => navigate('/gods')}
-            >
-              Back to Gods
-            </button>
-          </div>
-          
-          {error && (
-            <div className="alert alert-danger" role="alert">
-              {error}
-            </div>
-          )}
+      <div className="conversations-list">
+        <div className="header">
+          <h1>My Conversations</h1>
+          <button onClick={() => navigate('/gods')}>Back to Gods</button>
+        </div>
+        
+        {error && <div className="error-message">{error}</div>}
 
-          <div className="row g-4">
-            {conversations.map(conversation => (
-              <motion.div
-                key={conversation.id}
-                className="col-12 col-md-6 col-lg-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div 
-                  className="card h-100 shadow-sm border-0 conversation-card"
-                  onClick={() => navigate(`/conversations/${conversation.id}`)}
-                  style={{ cursor: 'pointer', borderRadius: '15px' }}
-                >
-                  <div className="card-body p-4">
-                    <h3 className="h4 text-primary mb-3">{conversation.title}</h3>
-                    <p className="text-muted mb-0">
-                      <small>
-                        Last updated: {new Date(conversation.updated_at).toLocaleString()}
-                      </small>
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+        <div className="conversations-grid">
+          {conversations.map(conversation => (
+            <motion.div
+              key={conversation.id}
+              className="conversation-card"
+              onClick={() => navigate(`/conversations/${conversation.id}`)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <h3>{conversation.title}</h3>
+              <p className="timestamp">
+                Last updated: {new Date(conversation.updated_at).toLocaleString()}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container-fluid bg-light min-vh-100 p-0">
-      <div className="chat-header bg-white shadow-sm py-3 px-4 mb-4">
-        <div className="container">
-          <div className="d-flex align-items-center">
-            <button 
-              className="btn btn-link text-primary p-0 me-3"
-              onClick={() => navigate('/conversations')}
-            >
-              <FaArrowLeft size={20} />
+    <div className="chat-container">
+      <div className="chat-header">
+        <div className="header-content">
+          <div className="left-section">
+            <button className="back-button" onClick={() => navigate('/conversations')}>
+              <FaArrowLeft />
             </button>
-            <h2 className="h3 mb-0 text-primary">{currentConversation?.title}</h2>
+            <div className="god-info">
+              <img 
+                src={currentConversation?.god?.image_url} 
+                alt={currentConversation?.god?.name}
+                className="god-avatar"
+              />
+              <div className="text-info">
+                <h2>{currentConversation?.god?.name}</h2>
+                <p>King of the Gods • Online</p>
+              </div>
+            </div>
+          </div>
+          <div className="right-section">
+            <button className="icon-button">
+              <FaPhone />
+            </button>
+            <button className="icon-button">
+              <FaEllipsisV />
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="container pb-5">
-        {error && (
-          <div className="alert alert-danger mb-4" role="alert">
-            {error}
-          </div>
-        )}
+      {error && <div className="error-message">{error}</div>}
 
-      <div className="messages-container bg-white shadow-sm rounded-3 p-4 mb-4">
+      <div className="messages-container">
         {currentConversation?.messages?.map((msg, index) => (
-          <div
+          <motion.div
             key={index}
-            className={`d-flex ${msg.is_from_user ? 'justify-content-end' : 'justify-content-start'} mb-3`}
+            className={`message ${msg.is_from_user ? 'user-message' : 'god-message'}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <div className={`chat-message ${msg.is_from_user ? 'user' : 'god'} rounded-3 p-3 ${msg.is_from_user ? 'bg-primary text-white' : 'bg-success-subtle text-dark'}`} style={{maxWidth: '75%'}}>
-              <div className="message-text">
-                {msg.content}
+            {!msg.is_from_user && (
+              <div className="god-icon">
+                <img 
+                  src={currentConversation.god.image_url} 
+                  alt={currentConversation.god.name} 
+                />
               </div>
-              <div className={`message-time mt-2 ${msg.is_from_user ? 'text-white-50' : 'text-muted'} small`}>
-                {new Date(msg.created_at).toLocaleString()}
+            )}
+            <div className="message-content">
+              {!msg.is_from_user && <div className="god-name">{currentConversation.god.name}</div>}
+              <div className="message-text">{msg.content}</div>
+              <div className="message-time">
+                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
-        <form onSubmit={sendMessage} className="message-form bg-white shadow-sm rounded-3 p-3">
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control form-control-lg border-0 bg-light"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Type your message..."
-            />
-            <button 
-              type="submit" 
-              className="btn btn-primary btn-lg px-4"
-              disabled={!message.trim()}
-            >
-              Send
-            </button>
-          </div>
-        </form>
-      </div>
+      <form onSubmit={sendMessage} className="message-input">
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Message the Gods..."
+        />
+        <button type="submit" disabled={!message.trim()}>
+          <FaPaperPlane />
+        </button>
+      </form>
     </div>
   );
 };

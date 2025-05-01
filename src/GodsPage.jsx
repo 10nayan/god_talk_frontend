@@ -1,13 +1,101 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { motion } from 'framer-motion';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaHome, FaCompass, FaPray, FaUser, FaSearch, FaComments, FaArrowRight } from 'react-icons/fa';
+import './GodsPage.css';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
 
+const GodCard = ({ god, onStartChat }) => {
+  const randomChatCount = `${Math.floor(Math.random() * (99 - 10 + 1) + 10)}.${Math.floor(Math.random() * 9)}k`;
+
+  const handleStartChat = (e) => {
+    e.stopPropagation();
+    onStartChat(god.id);
+  };
+
+  return (
+    <motion.div 
+      className="god-card"
+      onClick={handleStartChat}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2 }}
+    >
+      <motion.img 
+        src={god.image_url || defaultGodImage} 
+        alt={god.name} 
+        className="god-image"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1 }}
+      />
+      <div className="god-info">
+        <motion.h3
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          {god.name}
+        </motion.h3>
+        <motion.p 
+          className="description"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          {god.description}
+        </motion.p>
+        <motion.div 
+          className="card-footer"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="chat-stats">
+            <FaComments className="chat-icon" />
+            <span className="chat-count">{randomChatCount}</span>
+          </div>
+          <motion.button
+            className="start-chat-btn"
+            onClick={handleStartChat}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Start Chat <FaArrowRight className="arrow-icon" />
+          </motion.button>
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
+
+const SearchBar = ({ value, onChange }) => (
+  <motion.div 
+    className="search-container"
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3 }}
+  >
+    <div className="search-bar">
+      <FaSearch className="search-icon" />
+      <input
+        type="text"
+        placeholder="Search for Divine Guides"
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  </motion.div>
+);
+
 const GodsPage = () => {
   const [gods, setGods] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -43,7 +131,8 @@ const GodsPage = () => {
         return;
       }
 
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
         { 
           god_id: godId,
           title: `Chat with ${gods.find(god => god.id === godId)?.name || 'God'}`
@@ -61,99 +150,119 @@ const GodsPage = () => {
     }
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
+  const groupGodsByReligion = () => {
+    const grouped = {};
+    gods.forEach(god => {
+      if (!grouped[god.religion]) {
+        grouped[god.religion] = [];
       }
+      grouped[god.religion].push(god);
+    });
+
+    // Ensure Hinduism comes first
+    const orderedGroups = {};
+    if (grouped['Hinduism']) {
+      orderedGroups['Hinduism'] = grouped['Hinduism'];
+      delete grouped['Hinduism'];
     }
+    
+    // Add remaining religions in alphabetical order
+    Object.keys(grouped).sort().forEach(religion => {
+      orderedGroups[religion] = grouped[religion];
+    });
+
+    return orderedGroups;
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    }
-  };
+  const filteredGods = searchQuery
+    ? gods.filter(god => 
+        god.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        god.religion.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        god.description.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : groupGodsByReligion();
 
   return (
-    <div className="container-fluid py-5 bg-light min-vh-100">
-      <motion.div 
-        className="container"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="d-flex justify-content-between align-items-center mb-5">
-          <h1 className="display-4 fw-bold text-primary mb-0">Choose Your God</h1>
-          <button 
-            className="btn btn-outline-primary btn-lg"
-            onClick={() => navigate('/conversations')}
-          >
-            View Conversations
-          </button>
-        </div>
+    <div className="gods-page">
+      <SearchBar 
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
 
+      <AnimatePresence>
         {error && (
           <motion.div 
-            className="alert alert-danger"
+            className="error-message"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: -10 }}
           >
             {error}
           </motion.div>
         )}
+      </AnimatePresence>
 
-        <motion.div 
-          className="row g-4"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {gods.map((god) => (
-            <motion.div
-              key={god.id}
-              className="col-12 col-md-6 col-lg-4"
-              variants={itemVariants}
+      <motion.div 
+        className="content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
+        {searchQuery ? (
+          <motion.div 
+            className="section"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <h2>Search Results</h2>
+            <div className="cards-container">
+              <AnimatePresence>
+                {filteredGods.map(god => (
+                  <GodCard key={god.id} god={god} onStartChat={startChat} />
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        ) : (
+          Object.entries(filteredGods).map(([religion, religionGods]) => (
+            <motion.div 
+              key={religion} 
+              className="section"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <div 
-                className="card h-100 shadow-sm border-0 bg-white"
-                style={{ borderRadius: '15px', overflow: 'hidden' }}
-              >
-                <div 
-                  className="card-img-top"
-                  style={{
-                    height: '200px',
-                    backgroundImage: `url(${god.image_url || defaultGodImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                  }}
-                />
-                <div className="card-body d-flex flex-column p-4">
-                  <h2 className="card-title h3 text-primary mb-3">{god.name}</h2>
-                  <p className="card-text text-muted flex-grow-1">{god.description}</p>
-                  <motion.button
-                    className="btn btn-primary btn-lg mt-3"
-                    onClick={() => startChat(god.id)}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Start Chat
-                  </motion.button>
-                </div>
+              <h2>{religion}</h2>
+              <div className="cards-container">
+                <AnimatePresence>
+                  {religionGods.map(god => (
+                    <GodCard key={god.id} god={god} onStartChat={startChat} />
+                  ))}
+                </AnimatePresence>
               </div>
             </motion.div>
-          ))}
-        </motion.div>
+          ))
+        )}
       </motion.div>
+
+      <nav className="bottom-nav">
+        <button className="nav-item active">
+          <FaHome />
+          <span>Home</span>
+        </button>
+        <button className="nav-item">
+          <FaCompass />
+          <span>Guides</span>
+        </button>
+        <button className="nav-item">
+          <FaPray />
+          <span>Wisdom</span>
+        </button>
+        <button className="nav-item">
+          <FaUser />
+          <span>Profile</span>
+        </button>
+      </nav>
     </div>
   );
 };
