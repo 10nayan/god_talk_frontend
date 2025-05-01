@@ -12,6 +12,8 @@ const ConversationsPage = () => {
   const [currentConversation, setCurrentConversation] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const fetchConversations = async () => {
     try {
@@ -58,9 +60,10 @@ const ConversationsPage = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isSending) return;
 
     try {
+      setIsSending(true);
       const token = localStorage.getItem('token');
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations/chat`,
@@ -75,21 +78,39 @@ const ConversationsPage = () => {
         }
       );
       setMessage('');
-      fetchConversationDetails(conversationId);
+      await fetchConversationDetails(conversationId);
     } catch (error) {
       setError('Error sending message: ' + (error.response?.data?.detail || error.message));
+    } finally {
+      setIsSending(false);
     }
   };
 
   useEffect(() => {
-    fetchConversations();
-  }, []);
-
-  useEffect(() => {
-    if (conversationId) {
-      fetchConversationDetails(conversationId);
-    }
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        await fetchConversations();
+        if (conversationId) {
+          await fetchConversationDetails(conversationId);
+        }
+      } catch (error) {
+        setError('Error loading data: ' + (error.response?.data?.detail || error.message));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
   }, [conversationId]);
+
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+        <div className="loader"></div>
+        <p>Loading conversation...</p>
+      </div>
+    );
+  }
 
   if (!conversationId) {
     return (
@@ -188,9 +209,14 @@ const ConversationsPage = () => {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Message the Gods..."
+          disabled={isSending}
         />
-        <button type="submit" disabled={!message.trim()}>
-          <FaPaperPlane />
+        <button type="submit" disabled={!message.trim() || isSending}>
+          {isSending ? (
+            <div className="small-loader"></div>
+          ) : (
+            <FaPaperPlane />
+          )}
         </button>
       </form>
     </div>
