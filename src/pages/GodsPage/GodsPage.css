@@ -257,4 +257,37 @@
   margin: 16px 0;
   text-align: center;
   border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.sticky-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #181818;
+  border-top: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  z-index: 200;
+}
+
+.bottom-bar-btn {
+  background: #00ff59;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bottom-bar-btn.logout {
+  background: #ff4444;
+}
+
+.bottom-bar-btn:hover {
+  opacity: 0.9;
 } 

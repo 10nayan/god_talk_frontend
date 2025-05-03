@@ -257,6 +257,22 @@ const GodsPage = () => {
           ))
         )}
       </motion.div>
+
+      {/* Sticky Bottom Bar */}
+      <div className="sticky-bottom-bar">
+        <button className="bottom-bar-btn" onClick={() => navigate('/conversations')}>
+          Go to Conversations
+        </button>
+        <button
+          className="bottom-bar-btn logout"
+          onClick={() => {
+            localStorage.removeItem('token');
+            navigate('/');
+          }}
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV } from 'react-icons/fa';
 import './ConversationsPage.css';
 
+const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
+
 const ConversationsPage = () => {
   const navigate = useNavigate();
   const { conversationId } = useParams();
@@ -14,6 +16,7 @@ const ConversationsPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isGodTyping, setIsGodTyping] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -79,14 +82,27 @@ const ConversationsPage = () => {
     e.preventDefault();
     if (!message.trim() || isSending) return;
 
+    // Optimistically add the user's message
+    const optimisticMsg = {
+      content: message.trim(),
+      is_from_user: true,
+      created_at: new Date().toISOString(),
+    };
+    setCurrentConversation(prev => ({
+      ...prev,
+      messages: [...(prev?.messages || []), optimisticMsg],
+    }));
+    setMessage('');
+    setIsSending(true);
+    setIsGodTyping(true);
+
     try {
-      setIsSending(true);
       const token = localStorage.getItem('token');
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations/chat`,
         {
           conversation_id: conversationId,
-          message: message.trim(),
+          message: optimisticMsg.content,
         },
         {
           headers: {
@@ -94,12 +110,14 @@ const ConversationsPage = () => {
           },
         }
       );
-      setMessage('');
+      // After god's response, fetch the updated conversation (or just append god's message)
       await fetchConversationDetails(conversationId);
     } catch (error) {
       setError('Error sending message: ' + (error.response?.data?.detail || error.message));
+      // Optionally: remove the optimistic message or mark it as failed
     } finally {
       setIsSending(false);
+      setIsGodTyping(false);
     }
   };
 
@@ -134,7 +152,6 @@ const ConversationsPage = () => {
       <div className="conversations-list">
         <div className="header">
           <h1>My Conversations</h1>
-          <button onClick={() => navigate('/gods')}>Back to Gods</button>
         </div>
         
         {error && <div className="error-message">{error}</div>}
@@ -156,6 +173,20 @@ const ConversationsPage = () => {
             </motion.div>
           ))}
         </div>
+        <div className="sticky-bottom-bar">
+          <button className="bottom-bar-btn" onClick={() => navigate('/gods')}>
+            Back to Gods
+          </button>
+          <button
+            className="bottom-bar-btn logout"
+            onClick={() => {
+              localStorage.removeItem('token');
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
     );
   }
@@ -170,7 +201,7 @@ const ConversationsPage = () => {
             </button>
             <div className="god-info">
               <img 
-                src={currentConversation?.god?.image_url} 
+                src={currentConversation?.god?.image_url || defaultGodImage} 
                 alt={currentConversation?.god?.name}
                 className="god-avatar"
               />
@@ -196,7 +227,7 @@ const ConversationsPage = () => {
             {!msg.is_from_user && (
               <div className="god-icon">
                 <img 
-                  src={currentConversation.god.image_url} 
+                  src={currentConversation.god.image_url || defaultGodImage} 
                   alt={currentConversation.god.name} 
                 />
               </div>
@@ -210,6 +241,20 @@ const ConversationsPage = () => {
             </div>
           </motion.div>
         ))}
+        {isGodTyping && (
+          <div className="message god-message god-typing-indicator">
+            <div className="god-icon">
+              <img 
+                src={currentConversation?.god?.image_url || defaultGodImage} 
+                alt={currentConversation?.god?.name} 
+              />
+            </div>
+            <div className="message-content">
+              <div className="god-name">{currentConversation?.god?.name}</div>
+              <div className="message-text typing">is typing...</div>
+            </div>
+          </div>
+        )}
       </div>
 
       <form onSubmit={sendMessage} className="message-input">

@@ -114,6 +114,7 @@
   gap: 16px;
   margin-top: 64px; /* Match the header height */
   padding-top: 0; /* Remove top padding to prevent extra space */
+  padding-bottom: 120px; /* Ensure sticky bottom bar is visible */
 }
 
 .message {
@@ -339,4 +340,56 @@
 .message-input button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-} 
+}
+
+.god-typing-indicator .typing {
+  font-style: italic;
+  color: #aaa;
+  position: relative;
+}
+.god-typing-indicator .typing::after {
+  content: '';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  background: url('data:image/svg+xml;utf8,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6" fill="%23aaa" opacity="0.5"/></svg>') no-repeat center center;
+  animation: typing-bounce 1s infinite linear;
+}
+@keyframes typing-bounce {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.sticky-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #181818;
+  border-top: 1px solid #222;
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 24px;
+  z-index: 200;
+}
+
+.bottom-bar-btn {
+  background: #00ff59;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.bottom-bar-btn.logout {
+  background: #ff4444;
+}
+
+.bottom-bar-btn:hover {
+  opacity: 0.9;
+}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AuthPage from './AuthPage';
-import GodsPage from './GodsPage';
-import ConversationsPage from './ConversationsPage';
+import AuthPage from './pages/AuthPage/AuthPage';
+import GodsPage from './pages/GodsPage/GodsPage';
+import ConversationsPage from './pages/ConversationsPage/ConversationsPage';
 
 function App() {
   return (
