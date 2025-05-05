@@ -45,6 +45,7 @@
   }
   
   .auth-button {
+    min-width: 110px;
     width: 100%;
     background-color: #0084ff;
     color: #fff;
