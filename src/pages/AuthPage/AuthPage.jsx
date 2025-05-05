@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,9 +13,24 @@ const AuthPage = () => {
     password: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingDots, setLoadingDots] = useState('');
+
+  useEffect(() => {
+    let interval;
+    if (isLoading) {
+      interval = setInterval(() => {
+        setLoadingDots(prev => (prev.length < 3 ? prev + '.' : ''));
+      }, 400);
+    } else {
+      setLoadingDots('');
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     setError('');
 
     try {
@@ -44,6 +59,8 @@ const AuthPage = () => {
       }
     } catch (error) {
       setError(error.response?.data?.detail || 'An error occurred');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,8 +116,8 @@ const AuthPage = () => {
               className="auth-input"
             />
 
-            <button type="submit" className="auth-button">
-              {isLogin ? 'Login' : 'Register'}
+            <button type="submit" className="auth-button" disabled={isLoading}>
+              {isLoading ? `Login${loadingDots}` : (isLogin ? 'Login' : 'Register')}
             </button>
           </form>
 

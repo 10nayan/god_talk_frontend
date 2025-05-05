@@ -199,7 +199,7 @@ const ConversationsPage = () => {
             <button className="back-button" onClick={() => navigate('/conversations')}>
               <FaArrowLeft />
             </button>
-            <div className="god-info">
+            <div className="god-conversation-info">
               <img 
                 src={currentConversation?.god?.image_url || defaultGodImage} 
                 alt={currentConversation?.god?.name}

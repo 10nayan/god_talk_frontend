@@ -47,21 +47,22 @@
   justify-content: center;
 }
 
-.god-info {
+.god-conversation-info {
   display: flex;
   align-items: center;
   gap: 12px;
   max-width: 100%;
   overflow: hidden;
+  flex-direction: row;
 }
 
-.god-info .name-status {
+.god-conversation-info .name-status {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.god-info h2 {
+.god-conversation-info h2 {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
@@ -73,7 +74,7 @@
   line-height: 1.2;
 }
 
-.god-info p {
+.god-conversation-info p {
   font-size: 12px;
   color: #666;
   margin: 0;

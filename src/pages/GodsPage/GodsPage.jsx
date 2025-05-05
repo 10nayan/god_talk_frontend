@@ -48,7 +48,7 @@ const GodCard = ({ god, onStartChat }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          {god.description}
+          {god.description.length > 70 ? god.description.substring(0, 70) + '...' : god.description}
         </motion.p>
         <motion.div 
           className="card-footer"
