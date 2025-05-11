@@ -35,8 +35,9 @@ axiosInstance.interceptors.response.use(
         const password = localStorage.getItem('password');
 
         if (!username || !password) {
-          // If no credentials stored, redirect to login
-          window.location.href = '/';
+          // If no credentials stored, clear storage and redirect to login
+          localStorage.clear();
+          window.location.replace('/');
           return Promise.reject(error);
         }
 
@@ -61,11 +62,9 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, redirect to login
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
-        window.location.href = '/';
+        // If refresh fails, clear storage and redirect to login
+        localStorage.clear();
+        window.location.replace('/');
         return Promise.reject(refreshError);
       }
     }
