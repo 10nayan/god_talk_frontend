@@ -140,19 +140,47 @@ const GodsPage = () => {
         return;
       }
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
-        { 
-          god_id: godId,
-          title: `Chat with ${gods.find(god => god.id === godId)?.name || 'God'}`
-        },
+      // First, get all conversations
+      const conversationsResponse = await axios.get(
+        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         }
       );
-      navigate(`/conversations/${response.data.id}`);
+
+      // Check if there's an existing conversation with this god
+      const existingConversation = conversationsResponse.data.find(
+        conv => conv.god_id === godId
+      );
+
+      if (existingConversation) {
+        // If conversation exists, navigate to it
+        navigate(`/conversations/${existingConversation.id}`);
+      } else {
+        // If no conversation exists, create a new one
+        const god = gods.find(g => g.id === godId);
+        const response = await axios.post(
+          `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
+          { 
+            god_id: godId,
+            title: `Chat with ${god?.name || 'God'}`
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        
+        if (response.data && response.data.id) {
+          navigate(`/conversations/${response.data.id}`);
+        } else {
+          throw new Error('Invalid response from server');
+        }
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         navigate('/');
