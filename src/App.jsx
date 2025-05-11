@@ -20,6 +20,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AuthPage />} />
         <Route path="/gods" element={<GodsPage />} />
+        <Route path="/conversations" element={<ConversationsPage />} />
         <Route path="/conversations/:conversationId" element={<ConversationsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
