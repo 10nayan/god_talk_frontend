@@ -113,9 +113,22 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 64px; /* Match the header height */
-  padding-top: 0; /* Remove top padding to prevent extra space */
-  padding-bottom: 120px; /* Ensure sticky bottom bar is visible */
+  margin-top: 70px;
+  padding-bottom: 120px;
+  height: calc(100vh - 190px);
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
 }
 
 .message {
@@ -410,8 +423,11 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  min-height: 100px;
-  max-height: 250px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 .message-input input {
@@ -517,7 +533,7 @@
   color: #ff4444;
   padding: 12px;
   border-radius: 8px;
-  margin-bottom: 16px;
+  margin: 16px;
   text-align: center;
 }
 
@@ -573,6 +589,7 @@
   color: #aaa;
   position: relative;
 }
+
 .god-typing-indicator .typing::after {
   content: '';
   display: inline-block;
@@ -582,9 +599,32 @@
   background: url('data:image/svg+xml;utf8,<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6" fill="%23aaa" opacity="0.5"/></svg>') no-repeat center center;
   animation: typing-bounce 1s infinite linear;
 }
+
 @keyframes typing-bounce {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+  }
+  
+  .messages-container {
+    padding: 12px;
+    margin-top: 60px;
+    height: calc(100vh - 180px);
+  }
+  
+  .message-input {
+    padding: 12px;
+  }
+  
+  .message-input input {
+    padding: 12px 16px;
+    min-height: 48px;
+  }
 }
 
 .sticky-bottom-bar {

@@ -47,7 +47,11 @@ const AuthPage = () => {
           }
         );
 
+        // Store token and credentials for refresh
         localStorage.setItem('token', response.data.access_token);
+        localStorage.setItem('username', formData.username);
+        localStorage.setItem('password', formData.password);
+        
         navigate('/gods');
       } else {
         await axios.post(
