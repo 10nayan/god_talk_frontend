@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV } from 'react-icons/fa';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import './ConversationsPage.css';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
@@ -168,7 +171,14 @@ const ConversationsPage = () => {
             >
               <h3>{conversation.title}</h3>
               <p className="timestamp">
-                Last updated: {new Date(conversation.updated_at).toLocaleString()}
+                Last updated: {new Date(conversation.updated_at).toLocaleString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })}
               </p>
             </motion.div>
           ))}
@@ -234,9 +244,26 @@ const ConversationsPage = () => {
             )}
             <div className="message-content">
               {!msg.is_from_user && <div className="god-name">{currentConversation.god.name}</div>}
-              <div className="message-text">{msg.content}</div>
+              <div className="message-text">
+                {msg.is_from_user ? (
+                  msg.content
+                ) : (
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                )}
+              </div>
               <div className="message-time">
-                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(msg.created_at).toLocaleString('en-US', { 
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                  month: 'short',
+                  day: 'numeric'
+                })}
               </div>
             </div>
           </motion.div>

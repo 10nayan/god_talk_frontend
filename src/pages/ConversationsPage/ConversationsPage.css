@@ -164,10 +164,235 @@
   color: #666;
 }
 
+/* Message text base styles */
 .message-text {
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.6;
   white-space: pre-wrap;
+  word-break: break-word;
+  color: inherit;
+}
+
+/* Markdown styles */
+.message-text p {
+  margin: 0 0 1em 0;
+  line-height: 1.6;
+}
+
+.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+.message-text h1,
+.message-text h2,
+.message-text h3,
+.message-text h4,
+.message-text h5,
+.message-text h6 {
+  margin: 1.2em 0 0.6em 0;
+  line-height: 1.3;
+  font-weight: 600;
+  color: inherit;
+}
+
+.message-text h1 { font-size: 1.5em; }
+.message-text h2 { font-size: 1.3em; }
+.message-text h3 { font-size: 1.2em; }
+.message-text h4 { font-size: 1.1em; }
+.message-text h5 { font-size: 1em; }
+.message-text h6 { font-size: 0.9em; }
+
+.message-text ul,
+.message-text ol {
+  margin: 0.8em 0;
+  padding-left: 1.8em;
+}
+
+.message-text li {
+  margin: 0.4em 0;
+  line-height: 1.6;
+}
+
+.message-text li > p {
+  margin: 0.4em 0;
+}
+
+.message-text code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 0.9em;
+  color: inherit;
+}
+
+.message-text pre {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  line-height: 1.5;
+}
+
+.message-text pre code {
+  background-color: transparent;
+  padding: 0;
+  font-size: 0.9em;
+  color: inherit;
+}
+
+.message-text blockquote {
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  margin: 1em 0;
+  padding: 0.5em 0 0.5em 1em;
+  color: rgba(0, 0, 0, 0.7);
+  font-style: italic;
+}
+
+.message-text a {
+  color: #0084ff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.message-text a:hover {
+  text-decoration: underline;
+  color: #0066cc;
+}
+
+.message-text img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-text hr {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 1.5em 0;
+}
+
+.message-text table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-size: 0.9em;
+}
+
+.message-text th,
+.message-text td {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 0.6em;
+  text-align: left;
+}
+
+.message-text th {
+  background-color: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+.message-text tr:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Dark theme adjustments for god messages */
+.god-message .message-text {
+  color: #fff;
+}
+
+.god-message .message-text code,
+.god-message .message-text pre {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.god-message .message-text blockquote {
+  border-left-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.god-message .message-text a {
+  color: #66b3ff;
+}
+
+.god-message .message-text a:hover {
+  color: #99ccff;
+}
+
+.god-message .message-text hr {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.god-message .message-text th,
+.god-message .message-text td {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.god-message .message-text th {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.god-message .message-text tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Task list styling */
+.message-text input[type="checkbox"] {
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+/* Inline code in headings */
+.message-text h1 code,
+.message-text h2 code,
+.message-text h3 code,
+.message-text h4 code,
+.message-text h5 code,
+.message-text h6 code {
+  font-size: 0.9em;
+  padding: 0.1em 0.3em;
+}
+
+/* Nested list styling */
+.message-text ul ul,
+.message-text ol ol,
+.message-text ul ol,
+.message-text ol ul {
+  margin: 0.4em 0;
+}
+
+/* Definition lists */
+.message-text dl {
+  margin: 1em 0;
+}
+
+.message-text dt {
+  font-weight: 600;
+  margin-top: 1em;
+}
+
+.message-text dd {
+  margin-left: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+/* Footnotes */
+.message-text .footnotes {
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  font-size: 0.9em;
+}
+
+.message-text .footnotes p {
+  margin: 0.5em 0;
+}
+
+/* God message specific adjustments */
+.god-message .message-text .footnotes {
+  border-top-color: rgba(255, 255, 255, 0.1);
 }
 
 .message-time {
