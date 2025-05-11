@@ -196,7 +196,7 @@ const ConversationsPage = () => {
       <div className="chat-header">
         <div className="header-content">
           <div className="left-section">
-            <button className="back-button" onClick={() => navigate('/conversations')}>
+            <button className="back-button" onClick={() => navigate('/gods')}>
               <FaArrowLeft />
             </button>
             <div className="god-conversation-info">
