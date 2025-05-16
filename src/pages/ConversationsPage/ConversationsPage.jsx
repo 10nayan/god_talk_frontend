@@ -301,6 +301,8 @@ const ConversationsPage = () => {
             </div>
           </div>
         )}
+        {/* Spacer to avoid overlap with suggested questions */}
+        <div style={{ height: questions.length > 0 ? '180px' : '0px' }} />
       </div>
 
       {questions.length > 0 && (
