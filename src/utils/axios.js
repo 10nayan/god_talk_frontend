@@ -3,6 +3,7 @@ import axios from 'axios';
 // Create axios instance with default config
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_HOST_URL,
+  withCredentials: true, // Enable sending cookies in cross-origin requests
 });
 
 // Add a request interceptor
@@ -35,9 +36,8 @@ axiosInstance.interceptors.response.use(
         const password = localStorage.getItem('password');
 
         if (!username || !password) {
-          // If no credentials stored, clear storage and redirect to login
-          localStorage.clear();
-          window.location.replace('/');
+          // If no credentials stored, redirect to login
+          window.location.href = '/';
           return Promise.reject(error);
         }
 
@@ -62,9 +62,11 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${access_token}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // If refresh fails, clear storage and redirect to login
-        localStorage.clear();
-        window.location.replace('/');
+        // If refresh fails, redirect to login
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+        window.location.href = '/';
         return Promise.reject(refreshError);
       }
     }
