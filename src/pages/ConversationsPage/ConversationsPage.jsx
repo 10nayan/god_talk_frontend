@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import './ConversationsPage.css';
+import axiosInstance from '../../utils/axios';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
 
@@ -20,6 +21,7 @@ const ConversationsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isGodTyping, setIsGodTyping] = useState(false);
+  const [questions, setQuestions] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -140,6 +142,23 @@ const ConversationsPage = () => {
     };
     loadData();
   }, [conversationId]);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (currentConversation?.god?.id) {
+        try {
+          const response = await axiosInstance.get(`/questions/god/${currentConversation.god.id}`);
+          setQuestions(response.data.slice(0, 5)); // Only take up to 5
+        } catch (err) {
+          // Optionally handle error
+          setQuestions([]);
+        }
+      } else {
+        setQuestions([]);
+      }
+    };
+    fetchQuestions();
+  }, [currentConversation?.god?.id]);
 
   if (isLoading) {
     return (
@@ -283,6 +302,23 @@ const ConversationsPage = () => {
           </div>
         )}
       </div>
+
+      {questions.length > 0 && (
+        <div className="question-suggestions-container">
+          <div className="question-suggestions">
+            {questions.map((q) => (
+              <button
+                type="button"
+                key={q.id}
+                className="question-suggestion-btn"
+                onClick={() => setMessage(q.question)}
+              >
+                {q.question}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <form onSubmit={sendMessage} className="message-input">
         <input
