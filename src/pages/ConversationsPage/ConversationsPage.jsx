@@ -148,7 +148,13 @@ const ConversationsPage = () => {
       if (currentConversation?.god?.id) {
         try {
           const response = await axiosInstance.get(`/questions/god/${currentConversation.god.id}`);
-          setQuestions(response.data.slice(0, 5)); // Only take up to 5
+          const topTen = response.data.slice(0, 10);
+  
+          // Shuffle and pick any 3
+          const shuffled = [...topTen].sort(() => 0.5 - Math.random());
+          const selected = shuffled.slice(0, 3);
+  
+          setQuestions(selected);
         } catch (err) {
           // Optionally handle error
           setQuestions([]);
@@ -301,11 +307,11 @@ const ConversationsPage = () => {
             </div>
           </div>
         )}
-        {/* Spacer to avoid overlap with suggested questions */}
-        <div style={{ height: questions.length > 0 ? '180px' : '0px' }} />
       </div>
 
-      {questions.length > 0 && (
+      {questions.length > 0 && currentConversation?.messages?.length === 0 && (
+      <>
+        <div style={{ height: '180px' }} />
         <div className="question-suggestions-container">
           <div className="question-suggestions">
             {questions.map((q) => (
@@ -320,7 +326,8 @@ const ConversationsPage = () => {
             ))}
           </div>
         </div>
-      )}
+      </>
+    )}
 
       <form onSubmit={sendMessage} className="message-input">
         <input
