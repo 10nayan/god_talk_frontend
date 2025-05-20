@@ -1,9 +1,9 @@
 services:
   - type: web
     name: god-talk-frontend
-    env: node
+    env: static
     buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
+    staticPublishPath: ./build
     routes:
       - type: rewrite
         source: /conversations/*
