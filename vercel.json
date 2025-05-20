@@ -1,19 +1,20 @@
 {
-    "rewrites": [
-      {
-      "source": "/god",
-      "destination": "/index.html"
-      },
-      {
-      "source": "/conversation",
-      "destination": "/index.html"
-      },
-      {
-      "source": "/(.*)",
-      "destination": "/index.html"
-      }
-    ],
-    "buildCommand": "npm run build",
-    "outputDirectory": "dist",
-    "framework": "vite"
+  "version": 2,
+  "routes": [
+    {
+      "src": "/god",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/conversation",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite"
 }
