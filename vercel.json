@@ -1,8 +1,19 @@
 {
     "rewrites": [
       {
+      "source": "/god",
+      "destination": "/index.html"
+      },
+      {
+      "source": "/conversation",
+      "destination": "/index.html"
+      },
+      {
       "source": "/(.*)",
-      "destination": "/"
+      "destination": "/index.html"
       }
-    ]
+    ],
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "framework": "vite"
 }
