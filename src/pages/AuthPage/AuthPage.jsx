@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './AuthPage.css';
 
@@ -39,13 +39,9 @@ const AuthPage = () => {
         formDataObj.append('username', formData.username);
         formDataObj.append('password', formData.password);
 
-        const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_HOST_URL}/auth/token`,
-          formDataObj,
-          {
-            headers: { 'Content-Type': 'multipart/form-data' },
-          }
-        );
+        const response = await axiosInstance.post('/auth/token', formDataObj, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
 
         // Store token and credentials for refresh
         localStorage.setItem('token', response.data.access_token);
@@ -54,10 +50,7 @@ const AuthPage = () => {
         
         navigate('/gods');
       } else {
-        await axios.post(
-          `${import.meta.env.VITE_BACKEND_HOST_URL}/auth/register`,
-          formData
-        );
+        await axiosInstance.post('/auth/register', formData);
         setIsLogin(true);
         setError('Registration successful! Please login.');
       }

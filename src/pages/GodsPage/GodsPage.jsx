@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaHome, FaCompass, FaPray, FaUser, FaSearch, FaComments, FaArrowRight } from 'react-icons/fa';
 import './GodsPage.css';
@@ -116,11 +116,7 @@ const GodsPage = () => {
         return;
       }
 
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_HOST_URL}/gods`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const response = await axiosInstance.get('/gods');
       setGods(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -141,14 +137,7 @@ const GodsPage = () => {
       }
 
       // First, get all conversations
-      const conversationsResponse = await axios.get(
-        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      const conversationsResponse = await axiosInstance.get('/conversations');
 
       // Check if there's an existing conversation with this god
       const existingConversation = conversationsResponse.data.find(
@@ -161,19 +150,10 @@ const GodsPage = () => {
       } else {
         // If no conversation exists, create a new one
         const god = gods.find(g => g.id === godId);
-        const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`, 
-          { 
-            god_id: godId,
-            title: `Chat with ${god?.name || 'God'}`
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
+        const response = await axiosInstance.post('/conversations', { 
+          god_id: godId,
+          title: `Chat with ${god?.name || 'God'}`
+        });
         
         if (response.data && response.data.id) {
           navigate(`/conversations/${response.data.id}`);

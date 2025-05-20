@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../utils/axios';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import './ConversationsPage.css';
-import axiosInstance from '../../utils/axios';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
 
@@ -39,14 +38,7 @@ const ConversationsPage = () => {
         return;
       }
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.get('/conversations');
       setConversations(response.data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -65,14 +57,7 @@ const ConversationsPage = () => {
         return;
       }
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.get(`/conversations/${id}`);
       setCurrentConversation(response.data);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -103,19 +88,11 @@ const ConversationsPage = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_HOST_URL}/conversations/chat`,
-        {
-          conversation_id: conversationId,
-          message: optimisticMsg.content,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // After god's response, fetch the updated conversation (or just append god's message)
+      const response = await axiosInstance.post('/conversations/chat', {
+        conversation_id: conversationId,
+        message: optimisticMsg.content,
+      });
+      // After god's response, fetch the updated conversation
       await fetchConversationDetails(conversationId);
     } catch (error) {
       setError('Error sending message: ' + (error.response?.data?.detail || error.message));

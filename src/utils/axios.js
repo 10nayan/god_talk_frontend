@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_HOST_URL || 'http://localhost:8000';
+
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_HOST_URL,
+  baseURL: BACKEND_URL,
   withCredentials: true, // Enable sending cookies in cross-origin requests
 });
 
@@ -43,7 +45,7 @@ axiosInstance.interceptors.response.use(
 
         // Try to get a new token
         const response = await axios.post(
-          `${import.meta.env.VITE_BACKEND_HOST_URL}/auth/token`,
+          `${BACKEND_URL}/auth/token`,
           new URLSearchParams({
             username: username,
             password: password,
