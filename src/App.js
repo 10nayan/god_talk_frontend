@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage/AuthPage';
 import GodsPage from './pages/GodsPage/GodsPage';
 import ConversationsPage from './pages/ConversationsPage/ConversationsPage';
@@ -16,16 +16,14 @@ axios.interceptors.response = axiosInstance.interceptors.response;
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/gods" element={<GodsPage />} />
-        <Route path="/conversations" element={<ConversationsPage />} />
-        <Route path="/conversations/:conversationId" element={<ConversationsPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<AuthPage />} />
+      <Route path="/gods" element={<GodsPage />} />
+      <Route path="/conversations" element={<ConversationsPage />} />
+      <Route path="/conversations/:conversationId" element={<ConversationsPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 
-export default App;
+export default App; 
