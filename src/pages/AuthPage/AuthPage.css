@@ -10,7 +10,7 @@
   }
   
   .auth-card {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: #000;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 32px;
@@ -18,11 +18,21 @@
     max-width: 360px;
     backdrop-filter: blur(10px);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .auth-body {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+  
+  .auth-logo {
+    width: 150px;
+    margin-bottom: 20px;
   }
   
   .auth-header {

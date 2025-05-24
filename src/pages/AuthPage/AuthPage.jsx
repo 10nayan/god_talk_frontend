@@ -72,7 +72,7 @@ const AuthPage = () => {
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-body">
-          <h1 className="auth-header">{isLogin ? 'Welcome Back!' : 'Create Account'}</h1>
+          <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="auth-logo" />
 
           {error && (
             <div className={`auth-message ${error.includes('successful') ? 'auth-success' : 'auth-error'}`}>
