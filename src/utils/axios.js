@@ -8,6 +8,14 @@ const axiosInstance = axios.create({
   withCredentials: true, // Enable sending cookies in cross-origin requests
 });
 
+// List of endpoints that don't require authentication
+const publicEndpoints = [
+  '/gods',
+  '/conversations/chat',
+  '/conversations',
+  '/questions/god'
+];
+
 // Add a request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -27,6 +35,16 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Check if the endpoint is public
+    const isPublicEndpoint = publicEndpoints.some(endpoint => 
+      originalRequest.url.includes(endpoint)
+    );
+
+    // If it's a public endpoint or a specific conversation endpoint, just reject the error without redirecting
+    if (isPublicEndpoint || originalRequest.url.match(/\/conversations\/[^/]+$/)) {
+      return Promise.reject(error);
+    }
 
     // If the error is 401 and we haven't tried to refresh the token yet
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -73,6 +91,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // For non-401 errors or if token refresh failed, just reject the error
     return Promise.reject(error);
   }
 );

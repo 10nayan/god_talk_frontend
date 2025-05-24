@@ -21,56 +21,71 @@ const ConversationsPage = () => {
   const [isSending, setIsSending] = useState(false);
   const [isGodTyping, setIsGodTyping] = useState(false);
   const [questions, setQuestions] = useState([]);
+  const [isGuest, setIsGuest] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/');
-      return;
-    }
-  }, [navigate]);
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        if (conversationId) {
+          await fetchConversationDetails(conversationId);
+        } else {
+          const token = localStorage.getItem('token');
+          if (token) {
+            await fetchConversations();
+          }
+        }
+      } catch (error) {
+        if (error.response?.status === 401) {
+          // Only redirect to login if it's not a guest conversation
+          if (!isGuest) {
+            navigate('/');
+          }
+        }
+        setError('Error loading data: ' + (error.response?.data?.detail || error.message));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, [conversationId]);
 
   const fetchConversations = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
-
       const response = await axiosInstance.get('/conversations');
       setConversations(response.data);
     } catch (error) {
-      if (error.response?.status === 401) {
-        navigate('/');
-      } else {
-        setError('Error fetching conversations: ' + (error.response?.data?.detail || error.message));
-      }
+      setError('Error fetching conversations: ' + (error.response?.data?.detail || error.message));
     }
   };
 
   const fetchConversationDetails = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
-
       const response = await axiosInstance.get(`/conversations/${id}`);
       setCurrentConversation(response.data);
+      setIsGuest(response.data.is_guest || false);
+      setMessageCount(response.data.messages?.length || 0);
     } catch (error) {
       if (error.response?.status === 401) {
-        navigate('/');
-      } else {
-        setError('Error fetching conversation details: ' + (error.response?.data?.detail || error.message));
+        // Only redirect to login if it's not a guest conversation
+        if (!isGuest) {
+          navigate('/');
+        }
       }
+      setError('Error fetching conversation details: ' + (error.response?.data?.detail || error.message));
     }
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!message.trim() || isSending) return;
+
+    // Check message limit for guest users
+    if (isGuest && messageCount >= 5) {
+      setError('Guest users are limited to 5 messages. Please log in to continue chatting.');
+      return;
+    }
 
     // Optimistically add the user's message
     const optimisticMsg = {
@@ -85,9 +100,9 @@ const ConversationsPage = () => {
     setMessage('');
     setIsSending(true);
     setIsGodTyping(true);
+    setMessageCount(prev => prev + 1);
 
     try {
-      const token = localStorage.getItem('token');
       const response = await axiosInstance.post('/conversations/chat', {
         conversation_id: conversationId,
         message: optimisticMsg.content,
@@ -95,30 +110,18 @@ const ConversationsPage = () => {
       // After god's response, fetch the updated conversation
       await fetchConversationDetails(conversationId);
     } catch (error) {
+      if (error.response?.status === 401) {
+        // Only redirect to login if it's not a guest conversation
+        if (!isGuest) {
+          navigate('/');
+        }
+      }
       setError('Error sending message: ' + (error.response?.data?.detail || error.message));
-      // Optionally: remove the optimistic message or mark it as failed
     } finally {
       setIsSending(false);
       setIsGodTyping(false);
     }
   };
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      try {
-        await fetchConversations();
-        if (conversationId) {
-          await fetchConversationDetails(conversationId);
-        }
-      } catch (error) {
-        setError('Error loading data: ' + (error.response?.data?.detail || error.message));
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadData();
-  }, [conversationId]);
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -133,7 +136,8 @@ const ConversationsPage = () => {
   
           setQuestions(selected);
         } catch (err) {
-          // Optionally handle error
+          // Silently fail for questions - they're not critical
+          console.log('Could not fetch questions:', err);
           setQuestions([]);
         }
       } else {
@@ -161,43 +165,62 @@ const ConversationsPage = () => {
         
         {error && <div className="error-message">{error}</div>}
 
-        <div className="conversations-grid">
-          {conversations.map(conversation => (
-            <motion.div
-              key={conversation.id}
-              className="conversation-card"
-              onClick={() => navigate(`/conversations/${conversation.id}`)}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h3>{conversation.title}</h3>
-              <p className="timestamp">
-                Last updated: {new Date(conversation.updated_at).toLocaleString('en-US', {
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  hour12: true,
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+        {localStorage.getItem('token') ? (
+          <div className="conversations-grid">
+            {conversations.map(conversation => (
+              <motion.div
+                key={conversation.id}
+                className="conversation-card"
+                onClick={() => navigate(`/conversations/${conversation.id}`)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3>{conversation.title}</h3>
+                <p className="timestamp">
+                  Last updated: {new Date(conversation.updated_at).toLocaleString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="guest-message">
+            <p>Please log in to view your conversations.</p>
+            <button className="login-btn" onClick={() => navigate('/')}>
+              Login
+            </button>
+          </div>
+        )}
+
         <div className="sticky-bottom-bar">
           <button className="bottom-bar-btn" onClick={() => navigate('/gods')}>
             Back to Gods
           </button>
-          <button
-            className="bottom-bar-btn logout"
-            onClick={() => {
-              localStorage.removeItem('token');
-              navigate('/');
-            }}
-          >
-            Logout
-          </button>
+          {localStorage.getItem('token') ? (
+            <button
+              className="bottom-bar-btn logout"
+              onClick={() => {
+                localStorage.removeItem('token');
+                navigate('/');
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              className="bottom-bar-btn"
+              onClick={() => navigate('/')}
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
     );
@@ -227,6 +250,11 @@ const ConversationsPage = () => {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+      {isGuest && messageCount >= 4 && (
+        <div className="guest-limit-warning">
+          You have {5 - messageCount} messages remaining. Please log in to continue chatting.
+        </div>
+      )}
 
       <div className="messages-container">
         {currentConversation?.messages?.map((msg, index) => (
@@ -287,34 +315,34 @@ const ConversationsPage = () => {
       </div>
 
       {questions.length > 0 && currentConversation?.messages?.length === 0 && (
-      <>
-        <div style={{ height: '180px' }} />
-        <div className="question-suggestions-container">
-          <div className="question-suggestions">
-            {questions.map((q) => (
-              <button
-                type="button"
-                key={q.id}
-                className="question-suggestion-btn"
-                onClick={() => setMessage(q.question)}
-              >
-                {q.question}
-              </button>
-            ))}
+        <>
+          <div style={{ height: '180px' }} />
+          <div className="question-suggestions-container">
+            <div className="question-suggestions">
+              {questions.map((q) => (
+                <button
+                  type="button"
+                  key={q.id}
+                  className="question-suggestion-btn"
+                  onClick={() => setMessage(q.question)}
+                >
+                  {q.question}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </>
-    )}
+        </>
+      )}
 
       <form onSubmit={sendMessage} className="message-input">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Message the Gods..."
-          disabled={isSending}
+          placeholder={isGuest && messageCount >= 5 ? "Please log in to continue chatting..." : "Message the Gods..."}
+          disabled={isSending || (isGuest && messageCount >= 5)}
         />
-        <button type="submit" disabled={!message.trim() || isSending}>
+        <button type="submit" disabled={!message.trim() || isSending || (isGuest && messageCount >= 5)}>
           {isSending ? (
             <div className="small-loader"></div>
           ) : (

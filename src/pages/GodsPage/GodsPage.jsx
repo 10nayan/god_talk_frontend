@@ -100,74 +100,42 @@ const GodsPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/');
-      return;
-    }
     fetchGods();
-  }, [navigate]);
+  }, []);
 
   const fetchGods = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
-
       const response = await axiosInstance.get('/gods');
       setGods(response.data);
     } catch (err) {
-      if (err.response?.status === 401) {
-        navigate('/');
-      } else {
-        setError('Failed to fetch gods. Please try again later.');
-        console.error('Error fetching gods:', err);
-      }
+      setError('Failed to fetch gods. Please try again later.');
+      console.error('Error fetching gods:', err);
     }
   };
 
   const startChat = async (godId) => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/');
-        return;
-      }
+      const god = gods.find(g => g.id === godId);
+      
+      // Create conversation payload
+      const conversationData = {
+        god_id: godId,
+        title: `Chat with ${god?.name || 'God'}`,
+        is_guest: !token // Set is_guest to true if no token
+      };
 
-      // First, get all conversations
-      const conversationsResponse = await axiosInstance.get('/conversations');
-
-      // Check if there's an existing conversation with this god
-      const existingConversation = conversationsResponse.data.find(
-        conv => conv.god_id === godId
-      );
-
-      if (existingConversation) {
-        // If conversation exists, navigate to it
-        navigate(`/conversations/${existingConversation.id}`);
+      // Create new conversation
+      const response = await axiosInstance.post('/conversations', conversationData);
+      
+      if (response.data && response.data.id) {
+        navigate(`/conversations/${response.data.id}`);
       } else {
-        // If no conversation exists, create a new one
-        const god = gods.find(g => g.id === godId);
-        const response = await axiosInstance.post('/conversations', { 
-          god_id: godId,
-          title: `Chat with ${god?.name || 'God'}`
-        });
-        
-        if (response.data && response.data.id) {
-          navigate(`/conversations/${response.data.id}`);
-        } else {
-          throw new Error('Invalid response from server');
-        }
+        throw new Error('Invalid response from server');
       }
     } catch (err) {
-      if (err.response?.status === 401) {
-        navigate('/');
-      } else {
-        setError('Failed to start chat. Please try again later.');
-        console.error('Error starting chat:', err);
-      }
+      setError('Failed to start chat. Please try again later.');
+      console.error('Error starting chat:', err);
     }
   };
 
@@ -271,15 +239,24 @@ const GodsPage = () => {
         <button className="bottom-bar-btn" onClick={() => navigate('/conversations')}>
           Go to Conversations
         </button>
-        <button
-          className="bottom-bar-btn logout"
-          onClick={() => {
-            localStorage.removeItem('token');
-            navigate('/');
-          }}
-        >
-          Logout
-        </button>
+        {localStorage.getItem('token') ? (
+          <button
+            className="bottom-bar-btn logout"
+            onClick={() => {
+              localStorage.removeItem('token');
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+            className="bottom-bar-btn"
+            onClick={() => navigate('/')}
+          >
+            Login
+          </button>
+        )}
       </div>
     </div>
   );
