@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
-import { motion } from 'framer-motion';
-import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV, FaBars, FaTimes } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -21,6 +21,7 @@ const ConversationsPage = () => {
   const [isSending, setIsSending] = useState(false);
   const [isGodTyping, setIsGodTyping] = useState(false);
   const [questions, setQuestions] = useState([]);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -155,6 +156,43 @@ const ConversationsPage = () => {
   if (!conversationId) {
     return (
       <div className="conversations-list">
+        <div className="top-header">
+          <button className="menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+          <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+        </div>
+
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              className="menu-overlay"
+              initial={{ opacity: 0, x: -300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -300 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="menu-content">
+                <button className="menu-item" onClick={() => {
+                  navigate('/gods');
+                  setIsMenuOpen(false);
+                }}>
+                  Back to Gods
+                </button>
+                <button 
+                  className="menu-item logout"
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    navigate('/');
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="header">
           <h1>My Conversations</h1>
         </div>
@@ -185,20 +223,6 @@ const ConversationsPage = () => {
             </motion.div>
           ))}
         </div>
-        <div className="sticky-bottom-bar">
-          <button className="bottom-bar-btn" onClick={() => navigate('/gods')}>
-            Back to Gods
-          </button>
-          <button
-            className="bottom-bar-btn logout"
-            onClick={() => {
-              localStorage.removeItem('token');
-              navigate('/');
-            }}
-          >
-            Logout
-          </button>
-        </div>
       </div>
     );
   }
@@ -223,6 +247,7 @@ const ConversationsPage = () => {
               </div>
             </div>
           </div>
+          <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
         </div>
       </div>
 

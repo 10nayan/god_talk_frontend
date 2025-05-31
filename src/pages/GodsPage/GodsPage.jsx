@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaHome, FaCompass, FaPray, FaUser, FaSearch, FaComments, FaArrowRight } from 'react-icons/fa';
+import { FaHome, FaCompass, FaPray, FaUser, FaSearch, FaComments, FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
 import './GodsPage.css';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
@@ -97,6 +97,7 @@ const GodsPage = () => {
   const [gods, setGods] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -205,6 +206,43 @@ const GodsPage = () => {
 
   return (
     <div className="gods-page">
+      <div className="top-header">
+        <button className="menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+        <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+      </div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            className="menu-overlay"
+            initial={{ opacity: 0, x: -300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="menu-content">
+              <button className="menu-item" onClick={() => {
+                navigate('/conversations');
+                setIsMenuOpen(false);
+              }}>
+                Go to Conversations
+              </button>
+              <button 
+                className="menu-item logout"
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  navigate('/');
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <SearchBar 
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -265,22 +303,6 @@ const GodsPage = () => {
           ))
         )}
       </motion.div>
-
-      {/* Sticky Bottom Bar */}
-      <div className="sticky-bottom-bar">
-        <button className="bottom-bar-btn" onClick={() => navigate('/conversations')}>
-          Go to Conversations
-        </button>
-        <button
-          className="bottom-bar-btn logout"
-          onClick={() => {
-            localStorage.removeItem('token');
-            navigate('/');
-          }}
-        >
-          Logout
-        </button>
-      </div>
     </div>
   );
 };
