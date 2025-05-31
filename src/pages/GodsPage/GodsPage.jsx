@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaHome, FaCompass, FaPray, FaUser, FaSearch, FaComments, FaArrowRight, FaBars, FaTimes } from 'react-icons/fa';
+import Feedback from '../../components/Feedback/Feedback';
 import './GodsPage.css';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
@@ -98,6 +99,7 @@ const GodsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [error, setError] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -230,6 +232,15 @@ const GodsPage = () => {
                 Go to Conversations
               </button>
               <button 
+                className="menu-item"
+                onClick={() => {
+                  setIsFeedbackOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Give Feedback
+              </button>
+              <button 
                 className="menu-item logout"
                 onClick={() => {
                   localStorage.removeItem('token');
@@ -242,6 +253,11 @@ const GodsPage = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Feedback 
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
 
       <SearchBar 
         value={searchQuery}

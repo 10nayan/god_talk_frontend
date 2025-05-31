@@ -1,0 +1,145 @@
+.feedback-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.feedback-modal {
+  background-color: #1a1a1a;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.close-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.close-button:hover {
+  color: #fff;
+}
+
+.feedback-modal h2 {
+  color: #fff;
+  font-size: 24px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.rating-container {
+  margin-bottom: 24px;
+}
+
+.rating-container label {
+  display: block;
+  color: #fff;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.stars {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.star {
+  color: #666;
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star.active {
+  color: #ffd700;
+}
+
+.star:hover {
+  color: #ffd700;
+}
+
+.input-group {
+  margin-bottom: 24px;
+}
+
+.input-group label {
+  display: block;
+  color: #fff;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.input-group textarea {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+  color: #fff;
+  font-size: 16px;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.input-group textarea:focus {
+  outline: none;
+  border-color: #0084ff;
+}
+
+.submit-button {
+  width: 100%;
+  background-color: #0084ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #0066cc;
+}
+
+.submit-button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background-color: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.success-message {
+  color: #00ff59;
+  text-align: center;
+  font-size: 18px;
+  padding: 24px;
+} 

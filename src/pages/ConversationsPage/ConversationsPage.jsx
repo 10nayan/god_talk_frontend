@@ -6,6 +6,7 @@ import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV, FaBars, FaTimes } from
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import Feedback from '../../components/Feedback/Feedback';
 import './ConversationsPage.css';
 
 const defaultGodImage = 'https://billmuehlenberg.com/wp-content/uploads/2023/04/2nd-coming-2.webp';
@@ -22,6 +23,7 @@ const ConversationsPage = () => {
   const [isGodTyping, setIsGodTyping] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -180,6 +182,15 @@ const ConversationsPage = () => {
                   Back to Gods
                 </button>
                 <button 
+                  className="menu-item"
+                  onClick={() => {
+                    setIsFeedbackOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Give Feedback
+                </button>
+                <button 
                   className="menu-item logout"
                   onClick={() => {
                     localStorage.removeItem('token');
@@ -192,6 +203,11 @@ const ConversationsPage = () => {
             </motion.div>
           )}
         </AnimatePresence>
+
+        <Feedback 
+          isOpen={isFeedbackOpen}
+          onClose={() => setIsFeedbackOpen(false)}
+        />
 
         <div className="header">
           <h1>My Conversations</h1>
