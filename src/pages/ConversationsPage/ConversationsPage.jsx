@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '../../utils/axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV, FaBars, FaTimes } from 'react-icons/fa';
+import { FaArrowLeft, FaPaperPlane, FaPhone, FaEllipsisV, FaBars, FaTimes, FaCircle, FaRegLightbulb, FaHome, FaComments, FaUser } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -24,6 +24,13 @@ const ConversationsPage = () => {
   const [questions, setQuestions] = useState([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [inputMessage, setInputMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [god, setGod] = useState(null);
+  const [showQuestionSuggestions, setShowQuestionSuggestions] = useState(false);
+  const [latestGodMessageId, setLatestGodMessageId] = useState(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -62,6 +69,8 @@ const ConversationsPage = () => {
 
       const response = await axiosInstance.get(`/conversations/${id}`);
       setCurrentConversation(response.data);
+      setGod(response.data.god);
+      setMessages(response.data.messages);
     } catch (error) {
       if (error.response?.status === 401) {
         navigate('/');
@@ -146,6 +155,57 @@ const ConversationsPage = () => {
     fetchQuestions();
   }, [currentConversation?.god?.id]);
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim() || isSending) return;
+
+    // Optimistically add the user's message
+    const optimisticMsg = {
+      content: inputMessage.trim(),
+      is_from_user: true,
+      created_at: new Date().toISOString(),
+    };
+    setCurrentConversation(prev => ({
+      ...prev,
+      messages: [...(prev?.messages || []), optimisticMsg],
+    }));
+    setInputMessage('');
+    setIsSending(true);
+    setIsTyping(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.post('/conversations/chat', {
+        conversation_id: conversationId,
+        message: optimisticMsg.content,
+      });
+      // After god's response, fetch the updated conversation
+      await fetchConversationDetails(conversationId);
+    } catch (error) {
+      setError('Error sending message: ' + (error.response?.data?.detail || error.message));
+      // Optionally: remove the optimistic message or mark it as failed
+    } finally {
+      setIsSending(false);
+      setIsTyping(false);
+    }
+  };
+
+  const handleQuestionSelect = (question) => {
+    setInputMessage(question);
+    setShowQuestionSuggestions(false);
+  };
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
   if (isLoading) {
     return (
       <div className="loading-container">
@@ -174,6 +234,9 @@ const ConversationsPage = () => {
               exit={{ opacity: 0, x: -300 }}
               transition={{ duration: 0.3 }}
             >
+              <button className="close-button" onClick={() => setIsMenuOpen(false)}>
+                <FaTimes />
+              </button>
               <div className="menu-content">
                 <button className="menu-item" onClick={() => {
                   navigate('/gods');
@@ -245,6 +308,60 @@ const ConversationsPage = () => {
 
   return (
     <div className="chat-container">
+      <div className="top-header">
+        <button className="menu-button" onClick={() => setIsMenuOpen(true)}>
+          <FaBars />
+        </button>
+        <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+      </div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            className="menu-overlay"
+            initial={{ opacity: 0, x: -300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button className="close-button" onClick={() => setIsMenuOpen(false)}>
+              <FaTimes />
+            </button>
+            <div className="menu-content">
+              <button className="menu-item" onClick={() => {
+                navigate('/gods');
+                setIsMenuOpen(false);
+              }}>
+                Go to Gods
+              </button>
+              <button
+                className="menu-item"
+                onClick={() => {
+                  setIsFeedbackOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              >
+                Give Feedback
+              </button>
+              <button
+                className="menu-item logout"
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  navigate('/');
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Feedback
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
+
       <div className="chat-header">
         <div className="header-content">
           <div className="left-section">
@@ -269,7 +386,7 @@ const ConversationsPage = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="messages-container">
+      <div className="messages-container" ref={messagesEndRef}>
         {currentConversation?.messages?.map((msg, index) => (
           <motion.div
             key={index}

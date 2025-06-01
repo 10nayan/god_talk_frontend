@@ -209,8 +209,8 @@ const GodsPage = () => {
   return (
     <div className="gods-page">
       <div className="top-header">
-        <button className="menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        <button className="menu-button" onClick={() => setIsMenuOpen(true)}>
+          <FaBars />
         </button>
         <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
       </div>
@@ -224,6 +224,9 @@ const GodsPage = () => {
             exit={{ opacity: 0, x: -300 }}
             transition={{ duration: 0.3 }}
           >
+            <button className="close-button" onClick={() => setIsMenuOpen(false)}>
+              <FaTimes />
+            </button>
             <div className="menu-content">
               <button className="menu-item" onClick={() => {
                 navigate('/conversations');

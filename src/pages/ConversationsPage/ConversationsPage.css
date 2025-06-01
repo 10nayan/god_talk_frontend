@@ -821,3 +821,20 @@
     padding-bottom: 180px;
   }
 }
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #ccc;
+}

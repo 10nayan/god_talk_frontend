@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage/AuthPage';
 import GodsPage from './pages/GodsPage/GodsPage';
 import ConversationsPage from './pages/ConversationsPage/ConversationsPage';
+import LandingPage from './pages/LandingPage/LandingPage';
 import './App.css';
 
 // Import axios and axios instance
@@ -17,7 +18,8 @@ axios.interceptors.response = axiosInstance.interceptors.response;
 const App = () => {
   return (
     <Routes>
-      <Route path="/" element={<AuthPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<AuthPage />} />
       <Route path="/gods" element={<GodsPage />} />
       <Route path="/conversations" element={<ConversationsPage />} />
       <Route path="/conversations/:conversationId" element={<ConversationsPage />} />
