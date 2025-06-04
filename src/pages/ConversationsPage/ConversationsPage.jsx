@@ -222,7 +222,13 @@ const ConversationsPage = () => {
           <button className="menu-button" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
-          <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+          <img 
+            src="/LiveGodsLogo.png" 
+            alt="LiveGods Logo" 
+            className="header-logo" 
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
 
         <AnimatePresence>
@@ -312,7 +318,13 @@ const ConversationsPage = () => {
         <button className="menu-button" onClick={() => setIsMenuOpen(true)}>
           <FaBars />
         </button>
-        <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+        <img 
+          src="/LiveGodsLogo.png" 
+          alt="LiveGods Logo" 
+          className="header-logo" 
+          onClick={() => navigate('/')}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
 
       <AnimatePresence>
@@ -380,7 +392,13 @@ const ConversationsPage = () => {
               </div>
             </div>
           </div>
-          <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+          <img 
+            src="/LiveGodsLogo.png" 
+            alt="LiveGods Logo" 
+            className="header-logo" 
+            onClick={() => navigate('/')}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
       </div>
 

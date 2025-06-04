@@ -34,7 +34,7 @@
 }
 
 .top-header .header-logo {
-  height: 50px; /* Adjust size as needed */
+  height: 80px; /* Adjust size as needed */
 }
 
 .menu-overlay {
@@ -63,6 +63,7 @@
   text-align: left;
   padding: 0.8rem 0;
   cursor: pointer;
+  border-radius: 20px;
   transition: color 0.3s ease;
 }
 
@@ -296,7 +297,7 @@
   }
 
   .top-header .header-logo {
-    height: 40px;
+    height: 80px;
   }
 
   .menu-overlay {
@@ -337,7 +338,7 @@
 
 @media (max-width: 480px) {
   .top-header .header-logo {
-    height: 35px;
+    height: 80px;
   }
 
   .menu-overlay {

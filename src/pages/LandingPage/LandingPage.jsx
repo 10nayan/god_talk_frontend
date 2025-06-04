@@ -16,17 +16,17 @@ const LandingPage = () => {
     {
       id: 1,
       question: 'How can I find my life\'s purpose?',
-      answerPreview: 'Your purpose lies in using your unique gifts to serve others...'
+      answerPreview: 'O seeker, the quest to find one’s life’s purpose (dharma) is as ancient as the first breath of creation. Even I, before manifesting the worlds, engaged in deep contemplation, questioning the intent and aim of creation itself. Your yearning is sacred, for to seek purpose is to align with the cosmic order.'
     },
     {
       id: 2,
       question: 'What is the path to inner peace?',
-      answerPreview: 'Inner peace comes from accepting what is and letting go...'
+      answerPreview: 'O seeker of tranquility, the quest for inner peace is the yearning to rest in the very source from which all creation springs. Even amidst the ever-turning wheel of time, there is a space of stillness within—unchanging, eternal, and pure.'
     },
     {
       id: 3,
       question: 'How to overcome challenges?',
-      answerPreview: 'Every challenge is an opportunity for growth...'
+      answerPreview: 'Challenges are as integral to life as night is to day. Even the worlds I shaped are born, sustained, and dissolved through cycles of struggle and renewal. To overcome challenges is not merely to escape them, but to grow in wisdom and strength through their embrace.'
     }
   ];
 

@@ -212,7 +212,13 @@ const GodsPage = () => {
         <button className="menu-button" onClick={() => setIsMenuOpen(true)}>
           <FaBars />
         </button>
-        <img src="/LiveGodsLogo.png" alt="LiveGods Logo" className="header-logo" />
+        <img 
+          src="/LiveGodsLogo.png" 
+          alt="LiveGods Logo" 
+          className="header-logo" 
+          onClick={() => navigate('/')}
+          style={{ cursor: 'pointer' }}
+        />
       </div>
 
       <AnimatePresence>
