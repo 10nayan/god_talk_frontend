@@ -210,6 +210,12 @@
   margin-bottom: 1rem;
 }
 
+.user-question-container,
+.god-answer-container {
+  display: flex;
+  align-items: flex-start;
+}
+
 .conversation-example-card .avatar {
   width: 40px;
   height: 40px;
@@ -227,13 +233,14 @@
 }
 
 .conversation-example-card .god-icon {
-  margin-left: 1rem; /* Add space between user and god avatar */
+  margin-right: 0.5rem; /* Adjusted margin for row layout */
+  margin-left: 0; /* Removed previous left margin */
 }
 
 .conversation-example-card .question {
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0;
 }
 
 .conversation-example-card .answer-preview {

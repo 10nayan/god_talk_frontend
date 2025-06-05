@@ -16,7 +16,7 @@ const LandingPage = () => {
     {
       id: 1,
       question: 'How can I find my life\'s purpose?',
-      answerPreview: 'O seeker, the quest to find one’s life’s purpose (dharma) is as ancient as the first breath of creation. Even I, before manifesting the worlds, engaged in deep contemplation, questioning the intent and aim of creation itself. Your yearning is sacred, for to seek purpose is to align with the cosmic order.'
+      answerPreview: 'O seeker, the quest to find one\'s life\'s purpose (dharma) is as ancient as the first breath of creation. Even I, before manifesting the worlds, engaged in deep contemplation, questioning the intent and aim of creation itself.'
     },
     {
       id: 2,
@@ -134,7 +134,7 @@ const LandingPage = () => {
             </ul>
           </div>
           <div className="feature-card">
-            <FaOm className="feature-icon" /> {/* Using FaOm for Personalized Guidance */}
+            <FaOm className="feature-icon" />
             <h3>Personalized Guidance</h3>
             <ul>
               <li>Ask about career, relationships, health, or personal matters</li>
@@ -153,12 +153,12 @@ const LandingPage = () => {
         <div className="conversation-examples-container">
           {conversationExamples.map(example => (
             <div key={example.id} className="conversation-example-card">
-              <div className="avatars">
+              <div className="user-question-container">
                 <FaUser className="avatar user-icon" /> 
-                <FaHandsPraying className="avatar god-icon" /> 
-              </div>
-              <div className="conversation-text">
                 <p className="question">{example.question}</p>
+              </div>
+              <div className="god-answer-container">
+                <FaHandsPraying className="avatar god-icon" /> 
                 <p className="answer-preview">{example.answerPreview}</p>
               </div>
                <button className="ask-question-button" onClick={handleAskQuestionClick}>
