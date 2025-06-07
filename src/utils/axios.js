@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_HOST_URL || 'http://localhost:
 
 // Create axios instance with default config
 const axiosInstance = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: `${BACKEND_URL}/api`,
   withCredentials: true, // Enable sending cookies in cross-origin requests
 });
 
@@ -45,7 +45,7 @@ axiosInstance.interceptors.response.use(
 
         // Try to get a new token
         const response = await axios.post(
-          `${BACKEND_URL}/auth/token`,
+          `${BACKEND_URL}/api/auth/token`,
           new URLSearchParams({
             username: username,
             password: password,
