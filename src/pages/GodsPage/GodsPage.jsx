@@ -120,6 +120,12 @@ const GodsPage = () => {
       }
 
       const response = await axiosInstance.get('/gods');
+      // Ensure response.data is an array
+      if (!Array.isArray(response.data)) {
+        console.error('Invalid response format:', response.data);
+        setError('Invalid response format from server');
+        return;
+      }
       setGods(response.data);
     } catch (err) {
       if (err.response?.status === 401) {
@@ -175,6 +181,10 @@ const GodsPage = () => {
   };
 
   const groupGodsByReligion = () => {
+    if (!Array.isArray(gods) || gods.length === 0) {
+      return {};
+    }
+
     const grouped = {};
     gods.forEach(god => {
       if (!grouped[god.religion]) {
